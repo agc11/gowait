@@ -3,8 +3,8 @@ package gowait
 import "context"
 
 type Result[T any] struct {
-	Result T
-	Error  error
+	Value T
+	Error error
 }
 
 type Future[T any] struct {
@@ -20,9 +20,9 @@ func NewFuture[T any](ctx context.Context, callback func(ctx context.Context) (T
 	response := Result[T]{}
 	go func() {
 		defer close(c)
-		result, err := callback(ctx)
+		value, err := callback(ctx)
 		response.Error = err
-		response.Result = result
+		response.Value = value
 	}()
 	return Future[T]{
 		await: func(ctx context.Context) Result[T] {
